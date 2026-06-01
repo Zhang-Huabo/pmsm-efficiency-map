@@ -36,9 +36,15 @@ motor = struct(...
 );
 
 loss = struct(...
-    'Kh', 0.05, ...          % Hysteresis loss coefficient (磁滞损耗系数)
-    'Ke', 1.5e-5, ...        % Eddy current loss coefficient (涡流损耗系数)
-    'Kfw', 8e-8 ...          % Windage/friction loss coefficient (风阻损耗系数)
+    'Kh', 4.0, ...           % Hysteresis loss coefficient (磁滞损耗系数)
+    'Kc', 0.0015, ...        % Classical eddy current loss coefficient (经典涡流损耗系数)
+    'Ke', 0.002, ...         % Excess eddy current loss coefficient (额外损耗系数)
+    'Kpm', 2e-12, ...        % Permanent magnet eddy current loss coefficient (永磁体涡流损耗系数)
+    'Von', 0.4, ...          % Inverter switch forward voltage drop [V] (开关管正向压降)
+    'Ron', 2.0e-3, ...       % Inverter switch dynamic resistance [Ohm] (开关管动态电阻)
+    'fsw', 10e3, ...         % Switching frequency [Hz] (开关频率)
+    'Ksw', 2e-7, ...         % Inverter switching loss coefficient (开关损耗系数)
+    'Kfw', 1.5e-8 ...        % Windage/friction loss coefficient (风摩损耗系数)
 );
 
 gridOpts = struct(...
@@ -87,6 +93,14 @@ end
 fprintf('Plotting and generating Efficiency Map...\n');
 fig = plotEfficiencyMap(N, T, ETA, losses, motor);
 
+% Save figure to assets/ directory
+assetsFolder = fullfile(currentFolder, '../assets');
+if ~exist(assetsFolder, 'dir')
+    mkdir(assetsFolder);
+end
+exportgraphics(fig, fullfile(assetsFolder, 'efficiency_map_plot.png'), 'Resolution', 300);
+fprintf('Updated plot saved to assets/efficiency_map_plot.png\n');
+
 % Inform user
-fprintf('Execution completed successfully. Figure window is open.\n');
+fprintf('Execution completed successfully.\n');
 fprintf('=====================================================\n');
