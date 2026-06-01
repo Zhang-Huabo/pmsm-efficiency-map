@@ -1,0 +1,39 @@
+name: MATLAB CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    name: Run MATLAB Tests & Static Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    # Sets up MATLAB on the GitHub Actions runner
+    - name: Set up MATLAB
+      uses: matlab-actions/setup-matlab@v1
+
+    # Check for syntax errors and warnings in all MATLAB files
+    - name: Run Code Analyzer (Linter)
+      uses: matlab-actions/run-command@v1
+      with:
+        command: |
+          diags = checkcode('src/*.m', '-ud');
+          if ~isempty(diags)
+              disp('Code Analyzer found issues:');
+              disp(struct2table(diags));
+          else
+              disp('All code passed checkcode diagnostics.');
+          end
+
+    # Run tests if there are any unit tests in the tests/ directory
+    - name: Run Tests
+      uses: matlab-actions/run-tests@v1
+      with:
+        select-by-folder: examples

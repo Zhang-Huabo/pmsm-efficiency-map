@@ -1,0 +1,42 @@
+# MATLAB-specific Git Ignore Patterns
+# ===================================
+
+# MATLAB autosave and recovery files
+*.asv
+*.backup
+*.autosave
+*~
+
+# Figure and variables (if created dynamically)
+*.fig
+*.mat
+
+# MEX binaries (compiled C/C++ files)
+*.mexax64
+*.mexa64
+*.mexmaci64
+*.mexmacintel
+*.mexw32
+*.mexw64
+
+# Code generation folders (Simulink/MATLAB Coder)
+codegen/
+slprj/
+sfprj/
+
+# Java/class files
+*.class
+
+# Project local settings and caches (only ignore user-specific ones)
+resources/project/user/
+*.prj.user
+.SimulinkProject/
+
+# Log files and crash dumps
+*.log
+matlab_crash_dump.*
+
+# OS-specific files
+Thumbs.db
+.DS_Store
+desktop.ini
