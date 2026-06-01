@@ -1,4 +1,4 @@
-function fig = plotEfficiencyMap(N, T, ETA, losses, motor)
+function fig = plotEfficiencyMap(N, T, ETA, ~, motor)
 % PLOTEFFICIENCYMAP Visualizes the PMSM four-quadrant efficiency map
 %
 %   fig = PLOTEFFICIENCYMAP(N, T, ETA, losses) plots the efficiency contour
@@ -85,7 +85,7 @@ hPowerMotor = plot(ax, speed_vec, Tcp_motor, 'w--', 'LineWidth', 2);
 % Generating constant power envelope curve
 Tcp_gen = -Pn ./ (2 * pi * speed_vec / 60);
 Tcp_gen(Tcp_gen < -T_max) = nan;
-hPowerGen = plot(ax, speed_vec, Tcp_gen, 'w--', 'LineWidth', 2);
+plot(ax, speed_vec, Tcp_gen, 'w--', 'LineWidth', 2);
 
 %% 6. Legend Setup
 legend(ax, [hContourf, hContour, hPowerMotor], ...

@@ -40,3 +40,6 @@ matlab_crash_dump.*
 Thumbs.db
 .DS_Store
 desktop.ini
+
+# Local test folder for interactive MATLAB APPs
+local_test/

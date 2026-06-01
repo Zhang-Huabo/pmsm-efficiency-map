@@ -24,16 +24,25 @@ jobs:
       uses: matlab-actions/run-command@v1
       with:
         command: |
-          diags = checkcode('src/*.m', '-ud');
-          if ~isempty(diags)
-              disp('Code Analyzer found issues:');
-              disp(struct2table(diags));
+          files = dir('src/*.m');
+          anyIssues = false;
+          for k = 1:length(files)
+              filePath = fullfile(files(k).folder, files(k).name);
+              diags = checkcode(filePath);
+              if ~isempty(diags)
+                  anyIssues = true;
+                  fprintf('Issues found in %s:\n', files(k).name);
+                  disp(struct2table(diags));
+              end
+          end
+          if anyIssues
+              error('Code Analyzer found issues in one or more files.');
           else
               disp('All code passed checkcode diagnostics.');
           end
 
-    # Run tests if there are any unit tests in the tests/ directory
+    # Run tests in the tests/ directory
     - name: Run Tests
       uses: matlab-actions/run-tests@v1
       with:
-        select-by-folder: examples
+        select-by-folder: tests
