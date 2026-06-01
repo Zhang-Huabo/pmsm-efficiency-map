@@ -98,7 +98,7 @@ assetsFolder = fullfile(currentFolder, '../assets');
 if ~exist(assetsFolder, 'dir')
     mkdir(assetsFolder);
 end
-exportgraphics(fig, fullfile(assetsFolder, 'efficiency_map_plot.png'), 'Resolution', 300);
+print(fig, fullfile(assetsFolder, 'efficiency_map_plot.png'), '-dpng', '-r300');
 fprintf('Updated plot saved to assets/efficiency_map_plot.png\n');
 
 % Inform user
