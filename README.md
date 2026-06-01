@@ -18,9 +18,11 @@ A high-performance, modular, and physics-informed MATLAB toolbox designed to com
 - **⚡ Four-Quadrant Analysis (四象限完整分析)**: Supports both motoring (电动) and generating/regenerative (发电/制动) modes, with rigorous quadrant-specific efficiency definition calculations.
 - **🎯 MTPA Stator Current Optimization (最大转矩电流比控制)**: Numerically solves for the optimal $I_d$ and $I_q$ trajectories to minimize copper losses under all torque demands.
 - **🌀 Dynamic Flux Weakening Boundary (动态弱磁控制)**: Automatically engages a robust voltage-limit-circle solver (`fzero` on negative $I_d$) when back-EMF exceeds inverter DC bus limits.
-- **📊 segregate Loss Modeling (多维损耗精确剥离)**: Calculates and maps separate core loss components:
-  - **Copper Losses (铜损)**: Stator Joule heating $P_{cu} = 3 R_s I_s^2$.
-  - **Iron Losses (铁损)**: Speed-dependent hysteresis and eddy-current losses $P_{fe} = K_h \omega_e + K_e \omega_e^2$.
+- **📊 Advanced Loss Modeling & Separation (多维损耗精确剥离与先进模型)**: Calculates and maps separate physical loss components across the motor and inverter:
+  - **Copper Losses (铜损)**: Stator winding Joule heating $P_{cu} = 3 R_s (I_d^2 + I_q^2)$.
+  - **Bertotti Iron Losses (铁损 - Bertotti 模型)**: Stator flux linkage dependent hysteresis, classical eddy current, and excess losses $P_{fe} = K_h \omega_e \psi_s^2 + K_c \omega_e^2 \psi_s^2 + K_e \omega_e^{1.5} \psi_s^{1.5}$.
+  - **PM Eddy Current Losses (永磁体涡流损耗)**: Stator current and frequency dependent rotor PM heating $P_{pm} = K_{pm} \omega_e^2 (I_d^2 + I_q^2)$.
+  - **Inverter Losses (逆变器损耗)**: Conduction and switching losses of power semiconductor switches $P_{inv} = (V_{on} I_s + R_{on} I_s^2) + K_{sw} f_{sw} V_{dc} I_s$.
   - **Windage & Friction (风摩损耗)**: Cubically speed-dependent mechanical losses $P_{fw} = K_{fw} \omega_m^3$.
   - **Stray Losses (杂散损耗)**: Load-dependent stray losses $P_{stray} = 0.5\% \times |P_{out}|$.
 - **🎨 Elite Visualizations (学术级图表渲染)**: Automatically identifies and marks the **peak efficiency point**, plots the **rated continuous point**, traces continuous power envelopes, and generates highly polished contour plots.
@@ -58,6 +60,30 @@ V_s = \sqrt{V_d^2 + V_q^2} \le V_{\max} = \frac{V_{dc}}{\sqrt{3}} \cdot m_{\max}
 $$
 
 When $V_s > V_{\max}$, the flux weakening controller injects additional negative d-axis demagnetizing current $I_d$ to satisfy the voltage circle limit.
+
+### Advanced Loss Models (先进损耗模型)
+
+To achieve higher accuracy, the toolbox implements high-fidelity loss models for each physical component:
+
+1. **Bertotti Iron Loss Model (铁损)**:
+   Instead of simple speed-dependent terms, we utilize the stator flux linkage amplitude $\psi_s = \sqrt{\psi_d^2 + \psi_q^2}$ where $\psi_d = L_d I_d + \psi_f$ and $\psi_q = L_q I_q$:
+   $$
+   P_{fe} = K_h \omega_e \psi_s^2 + K_c \omega_e^2 \psi_s^2 + K_e \omega_e^{1.5} \psi_s^{1.5}
+   $$
+   where $K_h$ is the hysteresis coefficient, $K_c$ is the classical eddy current coefficient, and $K_e$ is the excess loss coefficient.
+
+2. **Permanent Magnet Eddy Current Loss (永磁体涡流损耗)**:
+   Rotor permanent magnet losses induced by stator slotting harmonics and inverter carrier harmonics are modeled as:
+   $$
+   P_{pm} = K_{pm} \omega_e^2 (I_d^2 + I_q^2)
+   $$
+
+3. **Inverter Loss Model (逆变器损耗)**:
+   Switching and conduction losses of the IGBT/SiC inverter are computed based on the phase current amplitude $I_s = \sqrt{I_d^2 + I_q^2}$:
+   $$
+   P_{inv} = \underbrace{(V_{on} I_s + R_{on} I_s^2)}_{\text{Conduction Losses}} + \underbrace{K_{sw} f_{sw} V_{dc} I_s}_{\text{Switching Losses}}
+   $$
+   where $V_{on}$ is the device forward voltage drop, $R_{on}$ is the dynamic resistance, $f_{sw}$ is the switching frequency, and $K_{sw}$ is the switching loss coefficient.
 
 ---
 
@@ -107,8 +133,21 @@ motor = struct(...
     'T_max', 35, 'n_rated', 18000 ...
 );
 
-% 3. Run high-performance computation
-[N, T, ETA, losses] = pmsmEfficiencyMap(motor);
+% 3. Define advanced loss parameters struct (optional)
+loss = struct(...
+    'Kh', 60.0, ...       % Hysteresis loss coefficient
+    'Kc', 0.02, ...       % Classical eddy current loss coefficient
+    'Ke', 0.1, ...        % Excess eddy current loss coefficient
+    'Kpm', 1e-10, ...     % PM eddy current loss coefficient
+    'Von', 1.2, ...       % Inverter switch forward voltage drop [V]
+    'Ron', 15e-3, ...     % Inverter switch dynamic resistance [Ohm]
+    'fsw', 10e3, ...      % Switching frequency [Hz]
+    'Ksw', 2e-6, ...      % Inverter switching loss coefficient
+    'Kfw', 8e-8 ...       % Friction & windage loss coefficient
+);
+
+% 4. Run high-performance computation
+[N, T, ETA, losses] = pmsmEfficiencyMap(motor, loss);
 
 % 4. Render and annotate the map
 fig = plotEfficiencyMap(N, T, ETA, losses, motor);
