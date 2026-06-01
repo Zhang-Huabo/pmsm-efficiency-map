@@ -105,10 +105,17 @@ fig = plotEfficiencyMap(N, T, ETA, losses, motor);
 
 ## 📈 Visualizations / 效果图
 
-When executing the runner script, a high-contrast figure using the `turbo` colormap will be generated, automatically annotating:
-1. **The Peak Efficiency Point (最高效率点)** with a red pentagram and precise percentage value.
-2. **The Continuous Rated Continuous Point (额定持续工作点)** marked with a magenta asterisk.
-3. **Motoring & Generating Constant Power Boundaries (恒功率双向曲线)** traced dynamically with white dashed curves.
+When executing the runner script, a high-contrast figure using the `turbo` colormap will be generated, automatically annotating the Peak Efficiency Point, Rated continuous point, and symmetrical motoring/generating Constant Power Boundaries:
+
+当运行示例程序后，工具箱将自动绘制高学术质感的四象限效率 Map 云图：
+
+<p align="center">
+  <img src="assets/efficiency_map_plot.png" alt="PMSM Four-Quadrant Efficiency Map" width="750"/>
+</p>
+
+- **Peak Efficiency (最高效率点)**: Marked with a red pentagram (红色五角星) and precise percentage text.
+- **Rated Point (额定工作点)**: Marked with a magenta asterisk (品红色星号).
+- **Constant Power Limits (恒功率边界)**: Symmetrically traced by top and bottom white dashed curves (白虚线).
 
 ---
 
