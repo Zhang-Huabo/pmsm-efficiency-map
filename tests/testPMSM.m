@@ -28,6 +28,8 @@ function testDefaultCalculation(testCase)
     testCase.verifyClass(losses, 'struct');
     testCase.verifyTrue(isfield(losses, 'Pcu'));
     testCase.verifyTrue(isfield(losses, 'Pfe'));
+    testCase.verifyTrue(isfield(losses, 'Ppm'));
+    testCase.verifyTrue(isfield(losses, 'Pinv'));
     testCase.verifyTrue(isfield(losses, 'Pfw'));
     testCase.verifyTrue(isfield(losses, 'Pstray'));
     testCase.verifyTrue(isfield(losses, 'Ploss'));
@@ -87,4 +89,25 @@ function testMTPACalculation(testCase)
     % Te = 1.5 * p * (psi_f * Iq + (Ld - Lq) * Id * Iq)
     Te_calc = 1.5 * 2 * (0.03 * Iq_ipmsm + (40e-6 - 80e-6) * Id_ipmsm * Iq_ipmsm);
     testCase.verifyEqual(Te_calc, 15, 'RelTol', 1e-4);
+end
+
+function testCustomLossParameters(testCase)
+    % Define custom advanced loss parameters
+    loss = struct(...
+        'Kh', 70.0, ...
+        'Kc', 0.03, ...
+        'Ke', 0.15, ...
+        'Kpm', 1.5e-10, ...
+        'Von', 1.0, ...
+        'Ron', 10e-3, ...
+        'fsw', 15e3, ...
+        'Ksw', 1.5e-6, ...
+        'Kfw', 1.0e-7 ...
+    );
+    
+    [N, T, ETA, losses] = pmsmEfficiencyMap([], loss);
+    
+    testCase.verifyNotEmpty(N);
+    testCase.verifyTrue(all(losses.Ppm(~isnan(losses.Ppm)) >= 0));
+    testCase.verifyTrue(all(losses.Pinv(~isnan(losses.Pinv)) >= 0));
 end
