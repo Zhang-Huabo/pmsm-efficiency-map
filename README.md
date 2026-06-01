@@ -1,4 +1,5 @@
 # 🚀 Professional Four-Quadrant PMSM Efficiency Map Calculator
+
 ## 永磁同步电机四象限效率图计算与绘制工具箱
 
 [![MATLAB Version](https://img.shields.io/badge/MATLAB-R2022a%2B-blue.svg)](https://www.mathworks.com/)
@@ -6,7 +7,7 @@
 [![GitHub Actions](https://img.shields.io/badge/CI-MATLAB--Workflow-orange.svg)](.github/workflows/ci.yml)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](#contributing)
 
-A high-performance, modular, and physics-informed MATLAB toolbox designed to compute and visualize **four-quadrant efficiency maps (Efficiency Maps)** for Permanent Magnet Synchronous Motors (PMSM). 
+A high-performance, modular, and physics-informed MATLAB toolbox designed to compute and visualize **four-quadrant efficiency maps (Efficiency Maps)** for Permanent Magnet Synchronous Motors (PMSM).
 
 本工具箱是一个专为**永磁同步电机（PMSM）**设计的、高性能且物理特征完备的四象限效率图（Efficiency Map）计算与可视化 MATLAB 工具箱。通过解耦模块化重构，代码对 Git 差异控制极度友好，适用于学术研究、工程级电机性能评估与报告生成。
 
@@ -29,21 +30,33 @@ A high-performance, modular, and physics-informed MATLAB toolbox designed to com
 ## 📐 Underlying Engineering Physics / 核心数学模型
 
 ### Maximum Torque Per Ampere (MTPA)
+
 For an Interior PMSM (IPMSM) where $L_d < L_q$, the electromagnetic torque is:
-$$T_e = 1.5 p \left[ \psi_f I_q + (L_d - L_q) I_d I_q \right]$$
+
+$$
+T_e = 1.5 p \left[ \psi_f I_q + (L_d - L_q) I_d I_q \right]
+$$
 
 The MTPA control searches for a minimum current amplitude $I_s = \sqrt{I_d^2 + Iq^2}$ for any given torque $T_e$. This yields the optimal d-axis trajectory:
-$$I_d = \frac{\psi_f}{2(L_q - L_d)} - \sqrt{\frac{\psi_f^2}{4(L_q - L_d)^2} + I_q^2}$$
+
+$$
+I_d = \frac{\psi_f}{2(L_q - L_d)} - \sqrt{\frac{\psi_f^2}{4(L_q - L_d)^2} + I_q^2}
+$$
 
 ### Inverter Voltage Limit & Flux Weakening
+
 The stator steady-state phase voltages in the d-q rotating frame are:
-$$\begin{cases} 
-V_d = R_s I_d - \omega_e L_q I_q \\ 
-V_q = R_s I_q + \omega_e (L_d I_d + \psi_f) 
-\end{cases}$$
+
+$$
+\begin{cases} V_d = R_s I_d - \omega_e L_q I_q \\ V_q = R_s I_q + \omega_e (L_d I_d + \psi_f) \end{cases}
+$$
 
 The voltage must satisfy the inverter capability limit:
-$$V_s = \sqrt{V_d^2 + V_q^2} \le V_{\max} = \frac{V_{dc}}{\sqrt{3}} \cdot m_{\max}$$
+
+$$
+V_s = \sqrt{V_d^2 + V_q^2} \le V_{\max} = \frac{V_{dc}}{\sqrt{3}} \cdot m_{\max}
+$$
+
 When $V_s > V_{\max}$, the flux weakening controller injects additional negative d-axis demagnetizing current $I_d$ to satisfy the voltage circle limit.
 
 ---
@@ -122,6 +135,7 @@ When executing the runner script, a high-contrast figure using the `turbo` color
 ## 🤝 Contributing / 贡献指南
 
 Contributions are highly welcome! If you want to add new features (such as thermal models, spatial harmonic losses, or different modulation techniques), please:
+
 1. Fork this Repository.
 2. Create a feature branch (`git checkout -b feature/NewFeature`).
 3. Commit your changes.
