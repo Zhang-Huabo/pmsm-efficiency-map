@@ -50,7 +50,10 @@ $$
 The stator steady-state phase voltages in the d-q rotating frame are:
 
 $$
-\begin{cases} V_d = R_s I_d - \omega_e L_q I_q \\ V_q = R_s I_q + \omega_e (L_d I_d + \psi_f) \end{cases}
+\begin{cases}
+V_d = R_s I_d - \omega_e L_q I_q \\
+V_q = R_s I_q + \omega_e (L_d I_d + \psi_f)
+\end{cases}
 $$
 
 The voltage must satisfy the inverter capability limit:
@@ -65,25 +68,30 @@ When $V_s > V_{\max}$, the flux weakening controller injects additional negative
 
 To achieve higher accuracy, the toolbox implements high-fidelity loss models for each physical component:
 
-1. **Bertotti Iron Loss Model (铁损)**:
-   Instead of simple speed-dependent terms, we utilize the stator flux linkage amplitude $\psi_s = \sqrt{\psi_d^2 + \psi_q^2}$ where $\psi_d = L_d I_d + \psi_f$ and $\psi_q = L_q I_q$:
-   $$
-   P_{fe} = K_h \omega_e \psi_s^2 + K_c \omega_e^2 \psi_s^2 + K_e \omega_e^{1.5} \psi_s^{1.5}
-   $$
-   where $K_h$ is the hysteresis coefficient, $K_c$ is the classical eddy current coefficient, and $K_e$ is the excess loss coefficient.
+#### 1. Bertotti Iron Loss Model (铁损)
+Instead of simple speed-dependent terms, we utilize the stator flux linkage amplitude $\psi_s = \sqrt{\psi_d^2 + \psi_q^2}$ where $\psi_d = L_d I_d + \psi_f$ and $\psi_q = L_q I_q$:
 
-2. **Permanent Magnet Eddy Current Loss (永磁体涡流损耗)**:
-   Rotor permanent magnet losses induced by stator slotting harmonics and inverter carrier harmonics are modeled as:
-   $$
-   P_{pm} = K_{pm} \omega_e^2 (I_d^2 + I_q^2)
-   $$
+$$
+P_{fe} = K_h \omega_e \psi_s^2 + K_c \omega_e^2 \psi_s^2 + K_e \omega_e^{1.5} \psi_s^{1.5}
+$$
 
-3. **Inverter Loss Model (逆变器损耗)**:
-   Switching and conduction losses of the IGBT/SiC inverter are computed based on the phase current amplitude $I_s = \sqrt{I_d^2 + I_q^2}$:
-   $$
-   P_{inv} = \underbrace{(V_{on} I_s + R_{on} I_s^2)}_{\text{Conduction Losses}} + \underbrace{K_{sw} f_{sw} V_{dc} I_s}_{\text{Switching Losses}}
-   $$
-   where $V_{on}$ is the device forward voltage drop, $R_{on}$ is the dynamic resistance, $f_{sw}$ is the switching frequency, and $K_{sw}$ is the switching loss coefficient.
+where $K_h$ is the hysteresis coefficient, $K_c$ is the classical eddy current coefficient, and $K_e$ is the excess loss coefficient.
+
+#### 2. Permanent Magnet Eddy Current Loss (永磁体涡流损耗)
+Rotor permanent magnet losses induced by stator slotting harmonics and inverter carrier harmonics are modeled as:
+
+$$
+P_{pm} = K_{pm} \omega_e^2 (I_d^2 + I_q^2)
+$$
+
+#### 3. Inverter Loss Model (逆变器损耗)
+Switching and conduction losses of the IGBT/SiC inverter are computed based on the phase current amplitude $I_s = \sqrt{I_d^2 + I_q^2}$:
+
+$$
+P_{inv} = \underbrace{(V_{on} I_s + R_{on} I_s^2)}_{\text{Conduction Losses}} + \underbrace{K_{sw} f_{sw} V_{dc} I_s}_{\text{Switching Losses}}
+$$
+
+where $V_{on}$ is the device forward voltage drop, $R_{on}$ is the dynamic resistance, $f_{sw}$ is the switching frequency, and $K_{sw}$ is the switching loss coefficient.
 
 ---
 
